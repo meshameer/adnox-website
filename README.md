@@ -33,3 +33,11 @@ Repository: https://github.com/meshameer/adnox-website
 Website: https://shameer.farooks.com/adnox-website/
 
 Push to main to run tests, build and deploy through GitHub Actions. Pages uses the GitHub Actions publishing source. The repository name follows the requested adnox-website spelling; the product brand remains Adnex.
+
+## Cloudflare production
+
+Primary domain: https://adnex.net
+Build command: `npm test && npm run build`
+Output directory: `dist`
+Production branch: `main`
+The default Vite base is `/` for Cloudflare and the custom domain. The legacy GitHub Pages workflow explicitly overrides the base for its subdirectory.
