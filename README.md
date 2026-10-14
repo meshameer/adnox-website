@@ -41,3 +41,11 @@ Build command: `npm test && npm run build`
 Output directory: `dist`
 Production branch: `main`
 The default Vite base is `/` for Cloudflare and the custom domain. The legacy GitHub Pages workflow explicitly overrides the base for its subdirectory.
+
+## Google Analytics
+
+GA4 property: `G-6W7KE9Q1MC`. The Google tag is loaded only after explicit acceptance via the analytics banner; the footer allows changing that choice. Consent is saved in browser local storage. Declining/withdrawing disables collection and removes accessible GA cookies; withdrawing after loading reloads the page to remove the running tag. Advertising consent remains denied. No analytics events are replayed from before acceptance.
+
+Events: `pilot_cta_clicked`, `demo_started`, `demo_publish_completed`, `inquiry_draft_downloaded`. The last event is an unsent download, not a submitted lead. Events do not include form values, files or filenames. Page URLs omit query strings and fragments; referrer is omitted. This intentionally limits campaign attribution. The Google Analytics property owner should review Enhanced Measurement settings (especially automatic form interactions), retention and internal traffic filtering in GA Admin. Do not install a second Google tag via Cloudflare or another tag manager.
+
+Validation: accept analytics on the live site, interact with the demo, then check GA4 Realtime/DebugView as appropriate. Ad blockers may prevent measurement. Unit tests verify consent gating, single initialization, event payloads and withdrawal. These tests do not prove reporting in the Google Analytics account.
