@@ -47,6 +47,6 @@ export function setConsent(choice: Choice) {
     }
   }
 }
-export function track(event: 'pilot_cta_clicked' | 'demo_started' | 'demo_publish_completed' | 'inquiry_draft_downloaded') {
+export function track(event: 'pilot_cta_clicked' | 'inquiry_submitted') {
   if (allowed && getConsent() === 'accepted') window.gtag?.('event', event);
 }

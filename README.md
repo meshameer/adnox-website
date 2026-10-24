@@ -12,15 +12,25 @@ npm run build
 npm run preview
 ```
 
-The form intentionally downloads an **unsent text draft**. There is no backend, tracking, email service, or invented contact address. Connect an approved submission endpoint and privacy policy before using it for lead collection.
+## Contact form
 
-The upload/schedule/publish demonstration runs only in browser memory. Images are limited to JPEG, PNG and WebP under 8 MB. The offline control simulates cached playback; it does not prove hardware behavior.
+The form POSTs JSON to `/api/inquiry`, a Cloudflare Pages Function (`functions/api/inquiry.ts`, logic and tests in `src/server/`). It validates the fields, rejects cross-site requests, drops honeypot spam, and emails the enquiry through [Resend](https://resend.com) with reply-to set to the visitor. The page shows "sent" only after the function returns success; failures are shown to the visitor.
+
+Set these in Cloudflare Pages → Settings → Variables and secrets (Production and Preview):
+
+| Name | Value |
+| --- | --- |
+| `RESEND_API_KEY` | Resend API key (encrypt as a secret) |
+| `INQUIRY_TO` | Inbox that receives enquiries |
+| `INQUIRY_FROM` | Sender, e.g. `adnex website <onboarding@resend.dev>`; switch to an `@adnex.net` address after verifying the domain in Resend |
+
+Until these are set the form returns an error rather than losing messages. Resend's `onboarding@resend.dev` sender can only deliver to the email address that owns the Resend account. Consider a Cloudflare rate-limiting rule on `/api/inquiry` and Turnstile if spam appears.
 
 All product visuals and data are illustrative. Features, support and hardware are clearly described as proposed pilot scope. No customer logos, endorsements, performance statistics or shipped-capability claims are used.
 
 ## Assets and launch notes
 
-Restaurant photograph: https://unsplash.com/photos/1517248135467-4c7edcad34c4 (image source: https://images.unsplash.com/photo-1517248135467-4c7edcad34c4). Local copy in public/restaurant.jpg. Restaurant menu overlays, dashboard and player enclosure are original HTML/CSS illustrations. DM Sans is requested from Google Fonts with system-font fallbacks. External font requests can be removed or self-hosted for a fully self-contained deployment.
+Restaurant photograph: https://unsplash.com/photos/1517248135467-4c7edcad34c4 (image source: https://images.unsplash.com/photo-1517248135467-4c7edcad34c4). Local copy in public/restaurant.jpg. Restaurant menu overlays and the player enclosure are original HTML/CSS/SVG illustrations. DM Sans and DM Mono are self-hosted from `public/fonts` (Latin subsets, SIL OFL 1.1); the site makes no third-party font requests.
 
 Before public commercial launch: approve final product scope and brand/trademark usage; confirm pilot availability, contact endpoint, privacy policy, hardware specification and photographic license requirements. Canonical and social URL metadata use https://shameer.farooks.com/adnox-website/. Update these and the Vite base path for a custom domain.
 
@@ -46,6 +56,6 @@ The default Vite base is `/` for Cloudflare and the custom domain. The legacy Gi
 
 GA4 property: `G-6W7KE9Q1MC`. The Google tag is loaded only after explicit acceptance via the analytics banner; the footer allows changing that choice. Consent is saved in browser local storage. Declining/withdrawing disables collection and removes accessible GA cookies; withdrawing after loading reloads the page to remove the running tag. Advertising consent remains denied. No analytics events are replayed from before acceptance.
 
-Events: `pilot_cta_clicked`, `demo_started`, `demo_publish_completed`, `inquiry_draft_downloaded`. The last event is an unsent download, not a submitted lead. Events do not include form values, files or filenames. Page URLs omit query strings and fragments; referrer is omitted. This intentionally limits campaign attribution. The Google Analytics property owner should review Enhanced Measurement settings (especially automatic form interactions), retention and internal traffic filtering in GA Admin. Do not install a second Google tag via Cloudflare or another tag manager.
+Events: `pilot_cta_clicked`, `inquiry_submitted` (sent only after the server accepts the enquiry). Events do not include form values. Page URLs omit query strings and fragments; referrer is omitted. This intentionally limits campaign attribution. The Google Analytics property owner should review Enhanced Measurement settings (especially automatic form interactions), retention and internal traffic filtering in GA Admin. Do not install a second Google tag via Cloudflare or another tag manager.
 
-Validation: accept analytics on the live site, interact with the demo, then check GA4 Realtime/DebugView as appropriate. Ad blockers may prevent measurement. Unit tests verify consent gating, single initialization, event payloads and withdrawal. These tests do not prove reporting in the Google Analytics account.
+Validation: accept analytics on the live site, click a pilot CTA or send a test enquiry, then check GA4 Realtime/DebugView as appropriate. Ad blockers may prevent measurement. Unit tests verify consent gating, single initialization, event payloads and withdrawal. These tests do not prove reporting in the Google Analytics account.
