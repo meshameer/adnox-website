@@ -1,28 +1,313 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowRight, Play, Upload, CalendarDays, Check, Monitor, WifiOff, Layers, MapPin, Menu, X, ChevronRight, Plus } from 'lucide-react';
 import './styles.css';
 import AnalyticsConsent from './AnalyticsConsent';
 import { track } from './analytics';
 
-const Arrow = () => <ArrowUpRight size={17} aria-hidden="true"/>;
-function App() {
- const [menu,setMenu]=useState(false),[step,setStep]=useState(0),[asset,setAsset]=useState(''),[preview,setPreview]=useState(''),[period,setPeriod]=useState('Lunch · 11:00–15:00'),[published,setPublished]=useState(false),[error,setError]=useState(''),[saved,setSaved]=useState(false),[offline,setOffline]=useState(false);
- const reveal=useRef<HTMLDivElement>(null);
- useEffect(()=>{ const el=reveal.current; if(!el)return; const media=window.matchMedia('(prefers-reduced-motion: reduce)'); const update=()=>{const progress=Math.max(0,Math.min(1,1-el.getBoundingClientRect().top/window.innerHeight));el.style.setProperty('--reveal',String(media.matches?1:progress));}; update(); window.addEventListener('scroll',update,{passive:true}); return()=>window.removeEventListener('scroll',update);},[]);
- useEffect(()=>()=>{if(preview)URL.revokeObjectURL(preview)},[preview]);
- function choose(file?:File){if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>8*1024*1024){setError('Choose a JPG, PNG or WebP image under 8 MB.');return;}setError('');if(!asset) track('demo_started');setAsset(file.name);setPreview(URL.createObjectURL(file));setPublished(false);}
- function reset(){setStep(0);setAsset('');setPreview('');setPublished(false);setError('');}
- function inquiry(e:React.FormEvent<HTMLFormElement>){e.preventDefault();const data=new FormData(e.currentTarget);const body=`ADNEX PILOT INQUIRY — UNSENT DRAFT\n\nName: ${data.get('name')}\nWork email: ${data.get('email')}\nRestaurant: ${data.get('restaurant')}\nLocations: ${data.get('locations')}\nNotes: ${data.get('notes')}\n\nThis draft has not been submitted to Adnex. Contact details and a submission endpoint are not configured in this preview.`;const url=URL.createObjectURL(new Blob([body],{type:'text/plain'}));const a=document.createElement('a');a.href=url;a.download='adnex-pilot-inquiry.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setSaved(true);track('inquiry_draft_downloaded');}
- return <><a className="skip" href="#main">Skip to content</a><header className="nav"><a className="wordmark" href="#" aria-label="Adnex home">adnex</a><nav aria-label="Main navigation" className={menu?'links open':'links'}>{[['Experience','#experience'],['How it works','#demo'],['The player','#hardware']].map(([name,href])=><a key={href} href={href} onClick={()=>setMenu(false)}>{name}</a>)}</nav><a className="button nav-cta" href="#pilot" onClick={()=>track('pilot_cta_clicked')}>Explore the pilot <Arrow/></a><button className="menu-toggle" aria-label={menu?'Close menu':'Open menu'} aria-expanded={menu} onClick={()=>setMenu(!menu)}>{menu?<X/>:<Menu/>}</button></header>
- <main id="main"><section className="hero"><div className="eyebrow"><span className="blue-dot"/> A NEW PERSPECTIVE ON RESTAURANT SIGNAGE</div><h1>Your screens.<br/><span>Reimagined.</span></h1><p>Good food deserves a great first impression.<br/>Meet a more considered way to bring your menus to life.</p><div className="actions"><a className="button blue" href="#pilot" onClick={()=>track('pilot_cta_clicked')}>Be part of the pilot <Arrow/></a><a className="text-link" href="#demo"><span className="play"><Play size={12} fill="currentColor"/></span> Explore the experience</a></div><div className="restaurant-scene"><img src={`${import.meta.env.BASE_URL}restaurant.jpg`} alt="Warm, contemporary restaurant with timber tables and ambient pendant lighting" fetchPriority="high"/><div className="scene-shade"/><div className="scene-caption"><span>AN ATMOSPHERE.<br/>NOT JUST A SCREEN.</span><span>THE ADNEX VISION / 01</span></div><div className="menu-wall" aria-label="Illustrative restaurant menu screens"><div className="screen screen-one"><small>THE DAILY TABLE</small><b>Fresh.<br/>By nature.</b><div className="food-disc">✳</div><span>SEASONAL GOODNESS, EVERY DAY.</span></div><div className="screen screen-two"><small>GOOD FOOD. GOOD MOOD.</small><b>Made for<br/><i>your midday.</i></b><div className="menu-line">Garden bowl <span>12</span></div><div className="menu-line">House sourdough <span>8</span></div><div className="menu-line">Seasonal soup <span>9</span></div><small>ILLUSTRATIVE MENU</small></div><div className="screen screen-three"><small>A LITTLE SOMETHING GOOD</small><b>Take a<br/>slow sip.</b><div className="cup"/><span>YOUR DAILY RESET.</span></div></div><div className="scene-tag"><span className="blue-dot"/> Your space. A new possibility.</div></div><div className="hero-bottom"><span>DESIGNED AROUND THE RESTAURANT.</span><span>Managed hardware <i>·</i> Thoughtful software <i>·</i> One experience</span><a href="#experience" aria-label="Scroll to experience">↓</a></div></section>
- <section id="experience" className="section experience"><div className="section-top"><span className="eyebrow">01 / THE EXPERIENCE</span><span className="pill">PRODUCT CONCEPT</span></div><div className="split-heading"><h2>A little less admin.<br/><span>A lot more possibility.</span></h2><p>Your next special. Your morning menu. Your whole restaurant.<br/><br/>The Adnex vision brings it all into one calm, clear workspace.</p></div><div className="dashboard-shell" ref={reveal}><div className="dashboard"><aside><strong className="wordmark">adnex</strong><span className="workspace">Your workspace</span><div className="side-active"><Monitor size={15}/> Overview</div><div><Layers size={15}/> Content library</div><div><CalendarDays size={15}/> Schedules</div><div><MapPin size={15}/> Locations</div><small>ILLUSTRATIVE WORKSPACE</small></aside><div className="dash-content"><div className="dash-bar"><span>The Daily Table <ChevronRight size={12}/> Overview</span><span className="avatar">DT</span></div><div className="dash-title"><div><small>YOUR RESTAURANT, IN FOCUS</small><h3>Looking good today.</h3></div><span className="pill">Sample data</span></div><div className="metrics"><div><small>Screens</small><b>03 <span>in this demo</span></b></div><div><small>Scheduled playlists</small><b>02 <span>illustrative</span></b></div><div><small>Content library</small><b>08 <span>sample assets</span></b></div></div><div className="dash-sub"><b>Your screens</b><span>All locations ↓</span></div><div className="dash-screens">{['Front counter','Dining room','Coffee bar'].map((n,i)=><div key={n}><div className={'mini-menu mini-'+i}><small>THE DAILY TABLE</small><b>{['Fresh.\nBy nature.','Made for\nyour midday.','Take a\nslow sip.'][i]}</b><span>SEASONAL MENU</span></div><div className="screen-label"><b>{n}</b><span><i/> Demo</span></div><small>Sample screen · Restaurant 01</small></div>)}</div></div></div></div><p className="caption">A preview of the intended Adnex workspace. Not a live application.</p></section>
- <section id="demo" className="section demo-section"><div className="center-heading"><span className="eyebrow">02 / LESS BETWEEN IDEA AND SCREEN</span><h2>Three steps.<br/><span>One beautiful result.</span></h2><p>Take the concept for a spin. Everything here stays in your browser.</p></div><div className="demo"><div className="demo-controls"><div className="step-tabs" aria-label="Demo steps">{['Upload','Schedule','Publish'].map((s,i)=><button key={s} aria-current={step===i?'step':undefined} disabled={i>0&&!asset} onClick={()=>setStep(i)}><span>{i+1}</span>{s}</button>)}</div><div className="step-content">{step===0?<><Upload className="feature-icon"/><h3>Start with something delicious.</h3><p>Add your own image, or try our sample menu.</p><label className="upload-zone"><Plus size={24}/><span>{asset||'Choose an image'}</span><small>JPG, PNG or WebP · up to 8 MB</small><input aria-label="Upload menu image" type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>choose(e.target.files?.[0])}/></label><button className="text-link" onClick={()=>{if(!asset) track('demo_started');setAsset('Seasonal menu');setPreview('');setError('');setPublished(false)}}>Use the sample menu <ArrowRight size={16}/></button>{error&&<p role="alert">{error}</p>}<button className="button blue" disabled={!asset} onClick={()=>setStep(1)}>Next: schedule <ArrowRight size={16}/></button></>:step===1?<><CalendarDays className="feature-icon"/><h3>The right menu. The right moment.</h3><p>Choose a sample daypart for your content.</p><label className="field">Daypart<select value={period} onChange={e=>{setPeriod(e.target.value);setPublished(false)}}><option>Breakfast · 07:00–11:00</option><option>Lunch · 11:00–15:00</option><option>Dinner · 17:00–22:00</option></select></label><p className="fine">Sample schedule, using the restaurant’s local time.</p><button className="button blue" onClick={()=>setStep(2)}>Review & publish <ArrowRight size={16}/></button></>:<><Monitor className="feature-icon"/><h3>{published?'Looking good. Ready to serve.':'Your next moment, ready to go.'}</h3><p>{asset} · {period}<br/>Destination: demo counter screen</p><button className="button blue" disabled={published} onClick={()=>{setPublished(true);track('demo_publish_completed')}}>{published?<><Check size={16}/> Published to demo</>:<>Publish to demo screen <ArrowRight size={16}/></>}</button></>}<button className="reset" onClick={reset}>Reset demo</button></div></div><div className="demo-display"><div className="display-top"><span><i className="blue-dot"/> COUNTER SCREEN</span><span>LOCAL DEMO</span></div><div className={'demo-monitor '+(published?'published':'')}>{preview?<img src={preview} alt="Your uploaded menu preview"/>:<div className="demo-art"><small>THE DAILY TABLE</small><h3>Fresh ideas.<br/><em>Served daily.</em></h3><div className="abstract-plate"><span>✳</span></div><span>GOOD FOOD STARTS HERE.</span></div>}</div><p role="status" className="demo-status">{published?`✓ Demo screen updated · ${period}`:asset?`Preview · ${asset}`:'Your next great impression starts here.'}</p><small>Simulation only. No content is sent to a physical screen.</small></div></div></section>
- <section className="section features"><span className="eyebrow">03 / THOUGHTFULLY CONNECTED</span><h2>Everything in its place.<br/><span>Including your peace of mind.</span></h2><p className="section-note">Planned for the Adnex pilot. Scope and availability will be confirmed with each participant.</p><div className="bento"><article className="bento-large"><span className="card-number">01 / YOUR CONTENT</span><h3>One home for<br/>every fresh idea.</h3><p>A shared library for the menus, moments<br/>and promotions that make you, you.</p><div className="content-stack"><div>THE MORNING EDIT<b>Rise.<br/>& shine.</b><span>BREAKFAST MENU</span></div><div>THE DAILY TABLE<b>Fresh.<br/>By nature.</b><span>SEASONAL MENU</span></div><div>AFTER HOURS<b>Stay<br/>a little.</b><span>EVENING SPECIALS</span></div></div></article><article><span className="card-number">02 / YOUR RHYTHM</span><h3>From first coffee<br/>to last orders.</h3><p>Daypart scheduling designed around the way your restaurant moves.</p><div className="timeline"><span>07:00 <b>Breakfast</b></span><span>11:00 <b>Lunch</b></span><span>17:00 <b>Dinner</b></span></div></article><article><span className="card-number">03 / YOUR LOCATIONS</span><h3>A bigger picture.<br/>A personal touch.</h3><p>A central view, with room for each location to feel like itself.</p><div className="locations"><span><MapPin size={17}/> Your first location <i/></span><span><MapPin size={17}/> Your next chapter <Plus size={15}/></span></div></article><article className="bento-wide"><div><span className="card-number">04 / YOUR TIME BACK</span><h3>More hospitality.<br/>Less hardware.</h3><p>A vendor-managed approach to setup and player maintenance.<br/>So your attention stays on the room.</p></div><div className="orb"><Monitor size={54} strokeWidth={1}/><span><Check size={17}/></span></div></article></div></section>
- <section className="offline"><div className="section offline-inner"><div><span className="eyebrow">04 / BUILT AROUND THE REAL WORLD</span><h2>The internet takes a break.<br/><span>Your menu shouldn’t.</span></h2><p>The offline-first design keeps synchronized content on the player, so a connection interruption doesn’t have to interrupt the experience.</p><button className="connection-toggle" aria-pressed={offline} onClick={()=>setOffline(!offline)}><WifiOff size={18}/>{offline?'Restore demo connection':'Try a connection interruption'}<ArrowRight size={16}/></button><small>Pilot design target. Requires power, a working display and previously synchronized content. New content needs a connection.</small></div><div className="offline-visual"><div className="connection-line"><span>ADNEX CLOUD</span><div className={offline?'dashed disconnected':'dashed'}/><span className={offline?'offline-badge':'online-badge'}>{offline?'Connection paused':'Connected'}</span></div><div className="offline-screen"><span>THE DAILY TABLE</span><b>Still fresh.<br/><em>Still here.</em></b><span className="playing"><i/> CACHED CONTENT · PLAYING</span></div><p role="status">{offline?'Demo: cached menu continues while offline.':'Demo: content synchronized to the player.'}</p></div></div></section>
- <section id="hardware" className="section hardware"><div className="hardware-art" role="img" aria-label="Illustrative compact Adnex player enclosure, powered by Raspberry Pi"><div className="device"><div className="device-top">adnex<span>PLAYER</span><div className="vents">|||||||||||||||||||||||</div></div><div className="device-front"><span/><b>▰ ▰</b><i/></div></div><span className="hardware-caption">ENCLOSURE CONCEPT · NOT FINAL HARDWARE</span></div><div><span className="eyebrow">05 / SMALL PLAYER. BIG POSSIBILITY.</span><h2>Quietly capable.<br/><span>Completely considered.</span></h2><p>A compact Raspberry Pi–based player, with provisioning and maintenance planned to be managed by Adnex.</p><ul className="hardware-list"><li><Check/> Configured for your restaurant</li><li><Check/> Local storage for synchronized content</li><li><Check/> Vendor-managed software lifecycle</li></ul><p className="fine">Proposed pilot offering. Hardware model, installation, support terms and compatibility are confirmed during scoping.</p><a className="text-link" href="#pilot" onClick={()=>track('pilot_cta_clicked')}>Let’s find your setup <ArrowRight size={16}/></a></div></section>
- <section className="section use-cases"><div className="section-top"><span className="eyebrow">06 / AT HOME IN YOUR WORLD</span><span className="fine">Illustrative use cases</span></div><h2>Different spaces.<br/><span>The same attention to detail.</span></h2><div className="use-grid">{[['01','Cafés & bakeries','From the first flat white to the last fresh loaf.','Morning, made better.'],['02','Quick-service restaurants','Give your counter menu clarity, presence and personality.','Good food. No fuss.'],['03','Restaurant groups','A consistent brand, with local specials that feel at home.','One vision. Many tables.']].map(([num,title,desc,art],i)=><article key={num}><div className={'use-art use-'+i}><span>ADNEX / {num}</span><b>{art}</b><ArrowUpRight size={30}/></div><h3>{title}</h3><p>{desc}</p></article>)}</div></section>
- <section id="pilot" className="pilot section"><div><span className="eyebrow"><span className="blue-dot"/> LET’S BUILD WHAT’S NEXT</span><h2>Your restaurant.<br/>Our next chapter.</h2><p>Help shape a more thoughtful signage experience.<br/>Tell us about your space and what you need from your screens.</p><div className="pilot-detail"><span>01 <b>Share your setup</b></span><span>02 <b>Discuss the fit</b></span><span>03 <b>Scope your pilot</b></span></div><p className="fine">Adnex is in development. Pilot timing, pricing and feature availability have not been announced.</p></div><form onSubmit={inquiry}><h3>Start a pilot conversation.</h3><p className="form-notice">Preview form: no submission service is connected. Download your inquiry as a draft; it will not be sent to Adnex.</p><div className="form-row"><label className="field">Your name<input name="name" autoComplete="name" required maxLength={100} placeholder="Alex Morgan"/></label><label className="field">Work email<input name="email" type="email" autoComplete="email" required maxLength={200} placeholder="alex@restaurant.com"/></label></div><div className="form-row"><label className="field">Restaurant name<input name="restaurant" autoComplete="organization" required maxLength={150} placeholder="Your restaurant"/></label><label className="field">Locations<select name="locations"><option>1 location</option><option>2–5 locations</option><option>6–20 locations</option><option>21+ locations</option></select></label></div><label className="field">What do you have in mind? <span>(optional)</span><textarea name="notes" rows={3} maxLength={2000} placeholder="Your screens, your space, your ambitions…"/></label><button className="button blue" type="submit">Download inquiry draft <Arrow/></button><p className="fine">Your entries stay in this page until you download them. With your permission, analytics records draft downloads, never your entries.</p>{saved&&<p role="status" className="success">Draft created. It has not been sent to Adnex.</p>}</form></section></main>
- <footer className="section"><div className="footer-top"><a className="wordmark" href="#">adnex</a><p>A better experience.<br/>From the very first glance.</p><a href="#main">Back to top ↑</a></div><div className="footer-bottom"><span>© {new Date().getFullYear()} Adnex. All rights reserved.</span><span>Product concept · Built for the next chapter.</span><a href="#pilot" onClick={()=>track('pilot_cta_clicked')}>Pilot inquiry <Arrow/></a></div><AnalyticsConsent/></footer></>;
-}
-export default App;
+const NAV: [string, string][] = [
+  ['Home', '#top'],
+  ['Experience', '#experience'],
+  ['Reliability', '#reliability'],
+  ['Approach', '#approach'],
+  ['Contact', '#contact'],
+];
 
+const Logo = ({ large = false }: { large?: boolean }) => (
+  <a className={large ? 'logo logo-lg' : 'logo'} href="#top" aria-label="adnex, home">
+    adne
+    <svg viewBox="2.8 2.8 18.4 18.4" aria-hidden="true">
+      <path className="x1" d="M5 5L19 19" strokeWidth="4.4" strokeLinecap="round" fill="none" />
+      <path className="x2" d="M19 5L5 19" strokeWidth="4.4" strokeLinecap="round" fill="none" />
+    </svg>
+  </a>
+);
+
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
+
+const Tick = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7" /></svg>
+);
+
+const CloudIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-1.1-7.85A5 5 0 0 1 15.5 8 4.5 4.5 0 0 1 17 17H7z" /></svg>
+);
+
+/** Animated "offline-first" infographic: cycles connected/unreachable, honors prefers-reduced-motion. */
+function ReliabilityInfographic() {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduce) return;
+    const id = setInterval(() => setOnline(o => !o), 3000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="infographic">
+      <div className="ig-head" aria-hidden="true">
+        <span className="ig-chip"><CloudIcon /></span>
+        <b>Offline-first</b>
+        <span className={`ig-badge ${online ? 'ok' : 'warn'}`}>{online ? 'Connected' : 'Unreachable'}</span>
+      </div>
+      <div className={`ig-wire${online ? '' : ' cut'}`} aria-hidden="true" />
+      <div className="ig-screen" aria-hidden="true">
+        <span className="ig-scr-lb">Dining room</span>
+        <div className="ig-scr-foot">
+          <span className="ig-play">Playing</span>
+          <span className="ig-state">{online ? 'Synced' : 'Playing cached'}</span>
+        </div>
+      </div>
+      <ul className="ig-checks">
+        <li className="ig-check"><span className="ck" aria-hidden="true"><Tick /></span>No surprises mid-service</li>
+        <li className="ig-check"><span className="ck" aria-hidden="true"><Tick /></span>No screens left guessing</li>
+      </ul>
+    </div>
+  );
+}
+
+/** Decorative signage-tile wall behind the page; rebuilt to fill the viewport. */
+function TileWall() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const build = () => {
+      el.innerHTML = '';
+      const size = 72, gap = 12;
+      const cols = Math.ceil((window.innerWidth + gap) / (size + gap));
+      const rows = Math.ceil((window.innerHeight + gap) / (size + gap));
+      let seed = 29;
+      const rnd = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      const frag = document.createDocumentFragment();
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        const d = document.createElement('div');
+        const on = rnd() < 0.16;
+        d.className = on ? 'tile on' : 'tile';
+        d.style.cssText = `left:${c * (size + gap)}px;top:${r * (size + gap)}px;width:${size}px;height:${size}px`;
+        if (on) { d.style.setProperty('--d', `${(7 + rnd() * 7).toFixed(1)}s`); d.style.setProperty('--o', `-${(rnd() * 9).toFixed(1)}s`); }
+        frag.appendChild(d);
+      }
+      el.appendChild(frag);
+    };
+    build();
+    const onResize = () => { clearTimeout(timer); timer = setTimeout(build, 200); };
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('resize', onResize); clearTimeout(timer); };
+  }, []);
+  return <div id="bgwall" ref={ref} aria-hidden="true" />;
+}
+
+type FormState = 'idle' | 'sending' | 'sent' | 'error';
+
+function InquiryForm() {
+  const [state, setState] = useState<FormState>('idle');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [message, setMessage] = useState('');
+
+  async function submit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const value = (k: string) => String(data.get(k) ?? '').trim();
+    const next: Record<string, string> = {};
+    if (!value('name')) next.name = 'Please enter your name.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value('email'))) next.email = 'Please enter a valid email address.';
+    if (!value('restaurant')) next.restaurant = 'Please enter your restaurant name.';
+    setErrors(next);
+    if (Object.keys(next).length) {
+      (form.elements.namedItem(Object.keys(next)[0]) as HTMLElement | null)?.focus();
+      return;
+    }
+    setState('sending');
+    setMessage('');
+    try {
+      const res = await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: value('name'), email: value('email'), restaurant: value('restaurant'),
+          locations: value('locations'), message: value('message'), website: value('website'),
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setState('sent');
+      setMessage(`Thanks, ${value('name')}. Your message has been sent — we'll reply to ${value('email')}.`);
+      form.reset();
+      track('inquiry_submitted');
+    } catch {
+      setState('error');
+      setMessage('Sorry, your message could not be sent. Please try again in a moment.');
+    }
+  }
+
+  const field = (id: string, label: string, props: React.InputHTMLAttributes<HTMLInputElement>) => (
+    <div className="fld">
+      <label htmlFor={`f-${id}`}>{label}</label>
+      <input className="in" id={`f-${id}`} name={id} aria-invalid={errors[id] ? true : undefined}
+        aria-describedby={errors[id] ? `e-${id}` : undefined} required {...props} />
+      {errors[id] && <span className="err-msg" id={`e-${id}`}>{errors[id]}</span>}
+    </div>
+  );
+
+  return (
+    <form className="form" onSubmit={submit} noValidate>
+      <h3>Start a conversation</h3>
+      <div className="form-row">
+        {field('name', 'Your name', { autoComplete: 'name', maxLength: 100 })}
+        {field('email', 'Work email', { type: 'email', autoComplete: 'email', maxLength: 200 })}
+      </div>
+      <div className="form-row">
+        {field('restaurant', 'Restaurant name', { autoComplete: 'organization', maxLength: 150 })}
+        <div className="fld">
+          <label htmlFor="f-locations">Locations</label>
+          <select className="in" id="f-locations" name="locations" defaultValue="1 location">
+            <option>1 location</option><option>2–5 locations</option><option>6–20 locations</option><option>21+ locations</option>
+          </select>
+        </div>
+      </div>
+      <div className="fld">
+        <label htmlFor="f-message">Anything you'd like us to know? <span className="faint" style={{ fontWeight: 400 }}>(optional)</span></label>
+        <textarea className="in" id="f-message" name="message" maxLength={2000} />
+      </div>
+      <div className="hp" aria-hidden="true">
+        <label htmlFor="f-website">Leave this field empty</label>
+        <input id="f-website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
+      <button className="btn btn-primary" type="submit" disabled={state === 'sending'}>
+        {state === 'sending' ? 'Sending…' : 'Send'}
+      </button>
+      <p className="note">We use your details only to reply to this enquiry. Analytics never records what you type here.</p>
+      <div role="status" aria-live="polite">
+        {message && <p className={state === 'sent' ? 'form-status ok' : 'form-status err'}>{message}</p>}
+      </div>
+    </form>
+  );
+}
+
+export default function App() {
+  const [menu, setMenu] = useState(false);
+  const cta = () => track('pilot_cta_clicked');
+  return (
+    <>
+      <TileWall />
+      <a className="skip" href="#main">Skip to content</a>
+      <header className="nav">
+        <div className="wrap nav-in">
+          <Logo />
+          <nav className="nav-links" aria-label="Primary">
+            {NAV.map(([name, href]) => <a key={href} href={href}>{name}</a>)}
+          </nav>
+          <a className="btn btn-primary btn-sm cta only-desk" href="#contact" onClick={cta}>Request a demo</a>
+          <button className="menu-btn" type="button" aria-expanded={menu} aria-controls="sheet"
+            aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(!menu)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              {menu ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
+            </svg>
+          </button>
+        </div>
+        <div className="sheet" id="sheet" hidden={!menu}>
+          <div className="wrap"><ul>
+            {NAV.map(([name, href]) => <li key={href}><a href={href} onClick={() => setMenu(false)}>{name}</a></li>)}
+            <li><a className="btn btn-primary" href="#contact" onClick={() => { setMenu(false); cta(); }}>Request a demo</a></li>
+          </ul></div>
+        </div>
+      </header>
+
+      <main id="main">
+        <div id="top" />
+        <section className="hero" aria-labelledby="h-hero">
+          <div className="wrap">
+            <div className="hero-copy">
+              <h1 id="h-hero">Your screens,<span className="ln2">reimagined.</span></h1>
+              <p className="lead">An effortless, fully managed way to run the screens in your restaurant.</p>
+              <div className="hero-actions">
+                <a className="btn btn-primary" href="#contact" onClick={cta}>Request a demo <ArrowIcon /></a>
+                <a className="btn btn-text" href="#experience">See the idea <span className="arw" aria-hidden="true">&rarr;</span></a>
+              </div>
+            </div>
+          </div>
+          <div className="hero-band">
+            <img src={`${import.meta.env.BASE_URL}hero-screens.jpg`} alt="A restaurant interior with adnex signage screens showing a seasonal menu, a lunch board and a coffee promotion" fetchPriority="high" />
+          </div>
+        </section>
+
+        <section id="experience" aria-labelledby="h-exp">
+          <div className="wrap sec split">
+            <div className="sec-copy">
+              <span className="eyebrow">The experience</span>
+              <h2 id="h-exp">An atmosphere. Not just a screen.</h2>
+              <p className="body">Your menus, your moments, your room — presented with the same care the food deserves.</p>
+              <p className="body">A quiet, confident look that belongs to your restaurant, not to the hardware on the wall.</p>
+              <a className="btn btn-text" href="#contact">See it in your space <span className="arw" aria-hidden="true">&rarr;</span></a>
+            </div>
+            <figure className="plate ink" aria-hidden="true">
+              <p className="word">Good food deserves<br />a great <span className="ac">first impression.</span></p>
+              <span className="beat" />
+            </figure>
+          </div>
+        </section>
+
+        <section id="reliability" className="wash" aria-labelledby="h-rel">
+          <div className="wrap sec split">
+            <div className="sec-copy">
+              <span className="eyebrow">Reliability</span>
+              <h2 id="h-rel">Dependable through every shift.</h2>
+              <p className="body">Designed to keep going when the connection doesn't, so the room stays exactly as you intended.</p>
+            </div>
+            <ReliabilityInfographic />
+          </div>
+        </section>
+
+        <section id="approach" aria-labelledby="h-app">
+          <div className="wrap">
+            <div className="panel-sec sec split">
+              <div className="sec-copy">
+                <span className="eyebrow">The approach</span>
+                <h2 id="h-app">Managed, end to end.</h2>
+                <p className="body">Hardware, software and upkeep, handled as one. You stay with your guests; we stay with the screens.</p>
+                <p className="body">We start small, with a pilot shaped around your restaurant.</p>
+              </div>
+              <div>
+                <ol className="steps">
+                  <li className="step"><b>Share your setup</b><span>Tell us about your space and your screens.</span></li>
+                  <li className="step"><b>Discuss the fit</b><span>We talk through whether adnex is right for you.</span></li>
+                  <li className="step"><b>Scope your pilot</b><span>A small, considered start — on your terms.</span></li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="wash" aria-labelledby="h-con">
+          <div className="wrap contact-grid">
+            <div className="sec-copy" style={{ maxWidth: '38ch' }}>
+              <span className="eyebrow">Contact</span>
+              <h2 id="h-con">Let's talk about your space.</h2>
+              <p className="body">Tell us about your restaurant and what you want from your screens. We'll take it from there.</p>
+              <p className="note">adnex is in development. Pilot timing, pricing and feature availability have not been announced.</p>
+            </div>
+            <InquiryForm />
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="wrap foot">
+          <Logo large />
+          <nav aria-label="Footer"><ul className="foot-links">
+            {NAV.map(([name, href]) => <li key={href}><a href={href}>{name}</a></li>)}
+          </ul></nav>
+        </div>
+        <div className="wrap">
+          <div className="privacy-row">
+            <p className="small">&copy; {new Date().getFullYear()} adnex</p>
+            <AnalyticsConsent />
+          </div>
+        </div>
+      </footer>
+    </>
+  );
+}
