@@ -4,11 +4,11 @@ import AnalyticsConsent from './AnalyticsConsent';
 import { track } from './analytics';
 
 const NAV: [string, string][] = [
+  ['Home', '#top'],
   ['Experience', '#experience'],
   ['Reliability', '#reliability'],
-  ['The player', '#hardware'],
-  ['How it works', '#how-it-works'],
-  ['Contact', '#pilot'],
+  ['Approach', '#approach'],
+  ['Contact', '#contact'],
 ];
 
 const Logo = ({ large = false }: { large?: boolean }) => (
@@ -30,6 +30,42 @@ const ArrowIcon = () => (
 const Tick = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7" /></svg>
 );
+
+const CloudIcon = () => (
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1-1.1-7.85A5 5 0 0 1 15.5 8 4.5 4.5 0 0 1 17 17H7z" /></svg>
+);
+
+/** Animated "offline-first" infographic: cycles connected/unreachable, honors prefers-reduced-motion. */
+function ReliabilityInfographic() {
+  const [online, setOnline] = useState(true);
+  useEffect(() => {
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    if (reduce) return;
+    const id = setInterval(() => setOnline(o => !o), 3000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="infographic">
+      <div className="ig-head" aria-hidden="true">
+        <span className="ig-chip"><CloudIcon /></span>
+        <b>Offline-first</b>
+        <span className={`ig-badge ${online ? 'ok' : 'warn'}`}>{online ? 'Connected' : 'Unreachable'}</span>
+      </div>
+      <div className={`ig-wire${online ? '' : ' cut'}`} aria-hidden="true" />
+      <div className="ig-screen" aria-hidden="true">
+        <span className="ig-scr-lb">Dining room</span>
+        <div className="ig-scr-foot">
+          <span className="ig-play">Playing</span>
+          <span className="ig-state">{online ? 'Synced' : 'Playing cached'}</span>
+        </div>
+      </div>
+      <ul className="ig-checks">
+        <li className="ig-check"><span className="ck" aria-hidden="true"><Tick /></span>No surprises mid-service</li>
+        <li className="ig-check"><span className="ck" aria-hidden="true"><Tick /></span>No screens left guessing</li>
+      </ul>
+    </div>
+  );
+}
 
 /** Decorative signage-tile wall behind the page; rebuilt to fill the viewport. */
 function TileWall() {
@@ -164,7 +200,7 @@ export default function App() {
           <nav className="nav-links" aria-label="Primary">
             {NAV.map(([name, href]) => <a key={href} href={href}>{name}</a>)}
           </nav>
-          <a className="btn btn-primary btn-sm cta only-desk" href="#pilot" onClick={cta}>Request a demo</a>
+          <a className="btn btn-primary btn-sm cta only-desk" href="#contact" onClick={cta}>Request a demo</a>
           <button className="menu-btn" type="button" aria-expanded={menu} aria-controls="sheet"
             aria-label={menu ? 'Close menu' : 'Open menu'} onClick={() => setMenu(!menu)}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -175,7 +211,7 @@ export default function App() {
         <div className="sheet" id="sheet" hidden={!menu}>
           <div className="wrap"><ul>
             {NAV.map(([name, href]) => <li key={href}><a href={href} onClick={() => setMenu(false)}>{name}</a></li>)}
-            <li><a className="btn btn-primary" href="#pilot" onClick={() => { setMenu(false); cta(); }}>Request a demo</a></li>
+            <li><a className="btn btn-primary" href="#contact" onClick={() => { setMenu(false); cta(); }}>Request a demo</a></li>
           </ul></div>
         </div>
       </header>
@@ -188,24 +224,13 @@ export default function App() {
               <h1 id="h-hero">Your screens,<span className="ln2">reimagined.</span></h1>
               <p className="lead">An effortless, fully managed way to run the screens in your restaurant.</p>
               <div className="hero-actions">
-                <a className="btn btn-primary" href="#pilot" onClick={cta}>Request a demo <ArrowIcon /></a>
+                <a className="btn btn-primary" href="#contact" onClick={cta}>Request a demo <ArrowIcon /></a>
                 <a className="btn btn-text" href="#experience">See the idea <span className="arw" aria-hidden="true">&rarr;</span></a>
               </div>
             </div>
           </div>
-          <div className="hero-scene">
-            <div className="scene">
-              <img src={`${import.meta.env.BASE_URL}restaurant.jpg`} alt="Warm, contemporary restaurant with timber tables and ambient pendant lighting" fetchPriority="high" />
-              <div className="scene-shade" />
-              <div className="scene-caption" aria-hidden="true"><span>An atmosphere.<br />Not just a screen.</span><span>The adnex vision / 01</span></div>
-              <div className="menu-wall" role="img" aria-label="Illustrative restaurant menu screens">
-                <div className="screen screen-one"><small>THE DAILY TABLE</small><b>Fresh.<br />By nature.</b><div className="food-disc">✳</div><span>SEASONAL GOODNESS, EVERY DAY.</span></div>
-                <div className="screen screen-two"><small>GOOD FOOD. GOOD MOOD.</small><b>Made for<br /><i>your midday.</i></b>
-                  <div className="menu-line">Garden bowl <span>12</span></div><div className="menu-line">House sourdough <span>8</span></div><div className="menu-line">Seasonal soup <span>9</span></div><small>ILLUSTRATIVE MENU</small></div>
-                <div className="screen screen-three"><small>A LITTLE SOMETHING GOOD</small><b>Take a<br />slow sip.</b><div className="cup" /><span>YOUR DAILY RESET.</span></div>
-              </div>
-              <div className="scene-tag">Your space. A new possibility.</div>
-            </div>
+          <div className="hero-band">
+            <img src={`${import.meta.env.BASE_URL}hero-screens.jpg`} alt="A restaurant interior with adnex signage screens showing a seasonal menu, a lunch board and a coffee promotion" fetchPriority="high" />
           </div>
         </section>
 
@@ -216,7 +241,7 @@ export default function App() {
               <h2 id="h-exp">An atmosphere. Not just a screen.</h2>
               <p className="body">Your menus, your moments, your room — presented with the same care the food deserves.</p>
               <p className="body">A quiet, confident look that belongs to your restaurant, not to the hardware on the wall.</p>
-              <a className="btn btn-text" href="#pilot">See it in your space <span className="arw" aria-hidden="true">&rarr;</span></a>
+              <a className="btn btn-text" href="#contact">See it in your space <span className="arw" aria-hidden="true">&rarr;</span></a>
             </div>
             <figure className="plate ink" aria-hidden="true">
               <p className="word">Good food deserves<br />a great <span className="ac">first impression.</span></p>
@@ -231,65 +256,16 @@ export default function App() {
               <span className="eyebrow">Reliability</span>
               <h2 id="h-rel">Dependable through every shift.</h2>
               <p className="body">Designed to keep going when the connection doesn't, so the room stays exactly as you intended.</p>
-              <p className="body">No surprises mid-service. No screens left guessing.</p>
             </div>
-            <figure className="plate" aria-hidden="true">
-              <p className="word">Steady service,<br /><span className="ac">shift after shift.</span></p>
-              <span className="seam" />
-              <span className="beat" />
-            </figure>
+            <ReliabilityInfographic />
           </div>
         </section>
 
-        <section id="hardware" aria-labelledby="h-dev">
-          <div className="wrap sec split">
-            <figure className="plate device-plate" role="img" aria-label="Illustration of a compact adnex player box. Enclosure concept, not final hardware.">
-              <svg viewBox="0 0 420 300" aria-hidden="true">
-                <ellipse cx="212" cy="214" rx="150" ry="22" fill="rgba(16,20,28,.08)" />
-                <g strokeLinejoin="round" strokeWidth="14">
-                  <polygon points="80,120 160,180 160,204 80,144" fill="#c9cfd9" stroke="#c9cfd9" />
-                  <polygon points="160,180 340,130 340,154 160,204" fill="#aeb6c3" stroke="#aeb6c3" />
-                  <polygon points="80,120 260,70 340,130 160,180" fill="#e9ecf1" stroke="#e9ecf1" />
-                </g>
-                <g transform="matrix(0.963,-0.268,0.8,0.6,80,120)">
-                  <text x="34" y="60" fontFamily="DM Sans,system-ui,sans-serif" fontWeight="600" fontSize="30" textLength="64" lengthAdjust="spacingAndGlyphs" fill="#2a2f38">adne</text>
-                  <g transform="translate(101,45) scale(0.82)">
-                    <path d="M2 2L18 18" stroke="#2a2f38" strokeWidth="4.6" strokeLinecap="round" />
-                    <path d="M18 2L2 18" stroke="#0b6e66" strokeWidth="4.6" strokeLinecap="round" />
-                  </g>
-                  <text x="37" y="76" fontFamily="DM Mono,ui-monospace,monospace" fontSize="7.5" letterSpacing="3" fill="#6b7280">PLAYER</text>
-                  <path d="M158 14h14M158 20h14M158 26h14M158 32h14M158 38h14M158 44h14M158 50h14M158 56h14" stroke="#9aa3b1" strokeWidth="1.6" strokeLinecap="round" />
-                </g>
-                <g fill="#3a414d">
-                  <polygon points="186,190 208,184 208,189 186,195" />
-                  <polygon points="216,182 223,180 223,185 216,187" />
-                  <polygon points="231,178 238,176 238,181 231,183" />
-                </g>
-                <circle cx="318" cy="141" r="2.6" fill="#2fbfaa" />
-              </svg>
-              <figcaption className="device-cap">Enclosure concept · not final hardware</figcaption>
-            </figure>
-            <div className="sec-copy">
-              <span className="eyebrow">The player</span>
-              <h2 id="h-dev">Quietly capable.<span className="ln2">Completely considered.</span></h2>
-              <p className="body">A compact, easy-to-set-up player, with provisioning and maintenance planned to be managed by adnex.</p>
-              <ul className="ticks">
-                <li><Tick />Configured for your restaurant</li>
-                <li><Tick />Local storage for synchronized content</li>
-                <li><Tick />Vendor-managed software lifecycle</li>
-              </ul>
-              <p className="note">Proposed pilot offering. Hardware model, installation, support terms and compatibility are confirmed during scoping.</p>
-              <a className="btn btn-text" href="#pilot" onClick={cta}>Let's find your setup <span className="arw" aria-hidden="true">&rarr;</span></a>
-            </div>
-          </div>
-        </section>
-
-        <section id="how-it-works" aria-labelledby="h-app">
-          <span id="demo" aria-hidden="true" />
+        <section id="approach" aria-labelledby="h-app">
           <div className="wrap">
             <div className="panel-sec sec split">
               <div className="sec-copy">
-                <span className="eyebrow">How it works</span>
+                <span className="eyebrow">The approach</span>
                 <h2 id="h-app">Managed, end to end.</h2>
                 <p className="body">Hardware, software and upkeep, handled as one. You stay with your guests; we stay with the screens.</p>
                 <p className="body">We start small, with a pilot shaped around your restaurant.</p>
@@ -305,7 +281,7 @@ export default function App() {
           </div>
         </section>
 
-        <section id="pilot" className="wash" aria-labelledby="h-con">
+        <section id="contact" className="wash" aria-labelledby="h-con">
           <div className="wrap contact-grid">
             <div className="sec-copy" style={{ maxWidth: '38ch' }}>
               <span className="eyebrow">Contact</span>

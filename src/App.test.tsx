@@ -1,9 +1,9 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); });
+afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.useRealTimers(); });
 
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
   await user.type(screen.getByLabelText('Your name'), 'Alex');
@@ -20,9 +20,30 @@ describe('adnex site', () => {
     });
   });
 
-  it('keeps the anchors used by the previous site', () => {
+  it('has the four sections the nav links to', () => {
     render(<App />);
-    for (const id of ['experience', 'demo', 'hardware', 'pilot']) expect(document.getElementById(id)).toBeTruthy();
+    for (const id of ['top', 'experience', 'reliability', 'approach', 'contact']) expect(document.getElementById(id)).toBeTruthy();
+  });
+
+  it('puts Home first in primary navigation', () => {
+    render(<App />);
+    const nav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(nav.querySelectorAll('a')[0].textContent).toBe('Home');
+  });
+
+  it('cycles the reliability infographic between connected and unreachable', () => {
+    vi.useFakeTimers();
+    render(<App />);
+    expect(screen.getByText('Connected')).toBeTruthy();
+    act(() => { vi.advanceTimersByTime(3000); });
+    expect(screen.getByText('Unreachable')).toBeTruthy();
+    expect(screen.getByText('Playing cached')).toBeTruthy();
+  });
+
+  it('shows the reliability checks', () => {
+    render(<App />);
+    expect(screen.getByText('No surprises mid-service')).toBeTruthy();
+    expect(screen.getByText('No screens left guessing')).toBeTruthy();
   });
 
   it('shows field errors and does not send an incomplete form', async () => {
