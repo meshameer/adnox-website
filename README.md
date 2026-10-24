@@ -2,6 +2,8 @@
 
 Standalone React + TypeScript + Vite marketing website. No dependency on, or changes to, Adnex V1/V2.
 
+Four sections, matching primary nav: Experience (`#experience`), Reliability (`#reliability`, with an animated offline-first infographic honoring `prefers-reduced-motion`), Approach (`#approach`), Contact (`#contact`). Nav/footer also link `#top` as "Home".
+
 ## Run
 
 ```sh
@@ -30,7 +32,7 @@ All product visuals and data are illustrative. Features, support and hardware ar
 
 ## Assets and launch notes
 
-Restaurant photograph: https://unsplash.com/photos/1517248135467-4c7edcad34c4 (image source: https://images.unsplash.com/photo-1517248135467-4c7edcad34c4). Local copy in public/restaurant.jpg. Restaurant menu overlays and the player enclosure are original HTML/CSS/SVG illustrations. DM Sans and DM Mono are self-hosted from `public/fonts` (Latin subsets, SIL OFL 1.1); the site makes no third-party font requests.
+Hero band photograph (`public/hero-screens.jpg`) is an illustrative restaurant interior with adnex signage screens, extracted from an approved design reference. DM Sans and DM Mono are self-hosted from `public/fonts` (Latin subsets, SIL OFL 1.1); the site makes no third-party font requests.
 
 Before public commercial launch: approve final product scope and brand/trademark usage; confirm pilot availability, contact endpoint, privacy policy, hardware specification and photographic license requirements. Canonical and social URL metadata use https://shameer.farooks.com/adnox-website/. Update these and the Vite base path for a custom domain.
 
