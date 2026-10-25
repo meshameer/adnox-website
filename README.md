@@ -16,9 +16,9 @@ npm run preview
 
 ## Contact form
 
-The form POSTs JSON to `/api/inquiry`, a Cloudflare Pages Function (`functions/api/inquiry.ts`, logic and tests in `src/server/`). It validates the fields, rejects cross-site requests, drops honeypot spam, and emails the enquiry through [Resend](https://resend.com) with reply-to set to the visitor. The page shows "sent" only after the function returns success; failures are shown to the visitor.
+The form POSTs JSON to `/api/inquiry`, routed by the Cloudflare Worker entry point (`src/worker.ts`) to the handler in `src/server/inquiry.ts` (also unit-tested). It validates the fields, rejects cross-site requests, drops honeypot spam, and emails the enquiry through [Resend](https://resend.com) with reply-to set to the visitor. The page shows "sent" only after the handler returns success; failures are shown to the visitor.
 
-Set these in Cloudflare Pages → Settings → Variables and secrets (Production and Preview):
+Set these in the Cloudflare dashboard → Workers & Pages → this project → Settings → Variables and Secrets (Production and Preview):
 
 | Name | Value |
 | --- | --- |
@@ -48,10 +48,13 @@ Push to main to run tests, build and deploy through GitHub Actions. Pages uses t
 
 ## Cloudflare production
 
+Deployed as a Cloudflare **Worker with static assets** (not Cloudflare Pages) — see `wrangler.jsonc` and `src/worker.ts`. Static files are served from `dist` via the `ASSETS` binding; `src/worker.ts` is the only code path that runs before that, and it only intercepts `POST /api/inquiry`.
+
 Primary domain: https://adnex.net
-Build command: `npm test && npm run build`
-Output directory: `dist`
+Build command: `npm run build`
+Deploy command: `npx wrangler deploy`
 Production branch: `main`
+Worker name: `adnox-website` (also reachable at https://adnox-website.<account>.workers.dev)
 The default Vite base is `/` for Cloudflare and the custom domain. The legacy GitHub Pages workflow explicitly overrides the base for its subdirectory.
 
 ## Google Analytics
