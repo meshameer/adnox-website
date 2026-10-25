@@ -34,17 +34,11 @@ All product visuals and data are illustrative. Features, support and hardware ar
 
 Hero band photograph (`public/hero-screens.jpg`) is an illustrative restaurant interior with adnex signage screens, extracted from an approved design reference. DM Sans and DM Mono are self-hosted from `public/fonts` (Latin subsets, SIL OFL 1.1); the site makes no third-party font requests.
 
-Before public commercial launch: approve final product scope and brand/trademark usage; confirm pilot availability, contact endpoint, privacy policy, hardware specification and photographic license requirements. Canonical and social URL metadata use https://shameer.farooks.com/adnox-website/. Update these and the Vite base path for a custom domain.
+Before public commercial launch: approve final product scope and brand/trademark usage; confirm pilot availability, contact endpoint, privacy policy, hardware specification and photographic license requirements. Canonical and social URL metadata (`index.html`) already point at https://adnex.net.
 
 Accessibility: semantic landmarks, keyboard-operable controls, form labels/native validation, focus indicators, skip link, live status messages, responsive navigation, reduced-motion support. The site does not claim formal WCAG certification.
 
-## GitHub Pages
-
-Repository: https://github.com/meshameer/adnox-website
-
-Website: https://shameer.farooks.com/adnox-website/
-
-Push to main to run tests, build and deploy through GitHub Actions. Pages uses the GitHub Actions publishing source. The repository name follows the requested adnox-website spelling; the product brand remains Adnex.
+Repository: https://github.com/meshameer/adnox-website (repository name follows the requested adnox-website spelling; the product brand remains Adnex). GitHub Pages is not used — Cloudflare is the only deploy target (below).
 
 ## Cloudflare production
 
